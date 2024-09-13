@@ -3,6 +3,10 @@ import justifiedLayout from "./justified-layout/index.js";
 const gallery = document.getElementById("gallery");
 
 if (gallery) {
+  gallery.style.visibility = "hidden";
+  gallery.style.height = "0px";
+  gallery.style.overflow = "hidden";
+
   let containerWidth = 0;
   const items = gallery.querySelectorAll(".gallery-item");
 
