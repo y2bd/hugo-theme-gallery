@@ -6,3 +6,9 @@
     {{ end }}
   </hgroup>
 {{ end }}
+
+{{ if .Content }}
+  <article>
+    {{ .Content }}
+  </article>
+{{ end }}
