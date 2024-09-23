@@ -13,9 +13,6 @@
     {{ $data := . | transform.Unmarshal }}
     {{ $featured_resources := where $data.resources "public_id" "eq" $page.Params.featured_id }}
     {{ $featured_resource := index $featured_resources 0 }}
-    {{ debug.Dump $url | warnf }}
-    {{ debug.Dump $data | warnf }}
-    {{ debug.Dump $featured_resource | warnf }}
     {{ $url := $featured_resource.secure_url }}
     {{ $thumbnail_url := (replace $url "upload/" "upload/c_limit,w_600,h_600/") }}
     {{ $thumbnail := resources.GetRemote $thumbnail_url }}
