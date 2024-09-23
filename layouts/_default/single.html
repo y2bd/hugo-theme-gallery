@@ -1,5 +1,10 @@
 {{ define "main" }}
   {{ partial "title.html" . }}
+  {{ if eq .Params.type "gallery" }}
   {{ partial "gallery.html" . }}
+  {{ end }}
+  {{ if eq .Params.type "remote" }}
+  {{ partial "remote-gallery.html" . }}
+  {{ end }}
   {{ partial "related.html" . }}
 {{ end }}

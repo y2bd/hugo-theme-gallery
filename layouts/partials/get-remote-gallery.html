@@ -1,0 +1,37 @@
+{{ $page := . }}
+{{ $gallery := "" }}
+{{ $CLOUDINARY_API_KEY := getenv "HUGO_CLOUDINARY_API_KEY" }}
+{{ $CLOUDINARY_API_SECRET := getenv "HUGO_CLOUDINARY_API_SECRET" }}
+{{ $url := print "https://" $CLOUDINARY_API_KEY ":" $CLOUDINARY_API_SECRET "@api.cloudinary.com/v1_1/dunmngosp/resources/by_asset_folder?max_results=150&asset_folder=" .Params.folder }}
+{{ $opts := dict
+  "headers" (dict "Content-Type" "application/json")
+}}
+{{ with resources.GetRemote $url }}
+  {{ with .Err }}
+      {{ errorf "%s" . }}
+  {{ else }}
+    {{ $data := . | transform.Unmarshal }}
+    {{ $featured_resources := where $data.resources "public_id" "eq" $page.Params.featured_id }}
+    {{ $featured_resource := index $featured_resources 0 }}
+    {{ debug.Dump $url | warnf }}
+    {{ debug.Dump $data | warnf }}
+    {{ debug.Dump $featured_resource | warnf }}
+    {{ $url := $featured_resource.secure_url }}
+    {{ $thumbnail_url := (replace $url "upload/" "upload/c_limit,w_600,h_600/") }}
+    {{ $thumbnail := resources.GetRemote $thumbnail_url }}
+    {{ $color := index $thumbnail.Colors 0 | default "transparent" }}
+    {{ $gallery = dict
+      "page" $page
+      "thumbnail" (dict 
+        "Width" $thumbnail.Width
+        "Height" $thumbnail.Height
+        "RelPermalink" $thumbnail_url
+      )
+      "color" $color
+      "imageCount" (len $data.resources)
+    }}
+  {{ end }}
+{{ else }}
+  {{ errorf "Unable to get remote resource %q" $url }}
+{{ end }}
+{{ return $gallery }}

@@ -1,0 +1,49 @@
+<section class="gallery">
+    <div id="gallery" style="visibility: hidden; height: 1px; overflow: hidden">
+        {{ $CLOUDINARY_API_KEY := getenv "HUGO_CLOUDINARY_API_KEY" }}
+        {{ $CLOUDINARY_API_SECRET := getenv "HUGO_CLOUDINARY_API_SECRET" }}
+        {{ $url := print "https://" $CLOUDINARY_API_KEY ":" $CLOUDINARY_API_SECRET
+        "@api.cloudinary.com/v1_1/dunmngosp/resources/by_asset_folder?max_results=150&asset_folder=" .Params.folder }}
+        {{ $opts := dict
+        "headers" (dict "Content-Type" "application/json")
+        }}
+        {{ with resources.GetRemote $url }}
+            {{ with .Err }}
+                {{ errorf "%s" . }}
+            {{ else }}
+                {{ $data := . | transform.Unmarshal }}
+                {{ range sort $data.resources "display_name" "asc" }}
+                    {{ $url := .secure_url }}
+                    {{ $image := resources.GetRemote $url }}
+                    {{ $thumbnail_url := (replace $url "upload/" "upload/c_limit,w_600,h_600/") }}
+                    {{ $full_url := (replace $url "upload/" "upload/c_limit,w_1600,h_1600/") }}
+                    {{ $thumbnail := resources.GetRemote $thumbnail_url }}
+                    {{ $full := resources.GetRemote $full_url }}
+                    {{ $color := index $thumbnail.Colors 0 | default "transparent" }}
+                    <a class="gallery-item" href="{{ $url }}" data-pswp-src="{{ $full_url }}" data-pswp-width="{{ $full.Width }}"
+                        data-pswp-height="{{ $full.Height }}" title="{{ .Title }}" itemscope
+                        itemtype="https://schema.org/ImageObject"
+                        style="aspect-ratio: {{ $thumbnail.Width }} / {{ $thumbnail.Height }}">
+                        <figure
+                            style="background-color: {{ $color }}; aspect-ratio: {{ $thumbnail.Width }} / {{ $thumbnail.Height }}">
+                            <noscript>
+                                <img width="{{ $thumbnail.Width }}" height="{{ $thumbnail.Height }}" src="{{ $thumbnail_url }}"
+                                    alt="{{ .Title }}" />
+                            </noscript>
+                            <img class="lazyload" width="{{ $thumbnail.Width }}" height="{{ $thumbnail.Height }}"
+                                data-src="{{ $thumbnail_url }}" alt="{{ .Title }}" />
+                        </figure>
+                        <meta itemprop="contentUrl" content="{{ $url }}" />
+                        {{ with site.Params.Author }}
+                        <span itemprop="creator" itemtype="https://schema.org/Person" itemscope>
+                            <meta itemprop="name" content="{{ site.Params.Author.name }}" />
+                        </span>
+                        {{ end }}
+                    </a>
+                {{ end }}
+            {{ end }}
+        {{ else }}
+            {{ errorf "Unable to get remote resource %q" $url }}
+        {{ end }}
+    </div>
+</section>
