@@ -2,10 +2,7 @@
   {{ partial "title.html" . }}
   {{ partial "featured.html" . }}
   <section class="galleries">
-    {{ range where (where .Pages "Params.private" "ne" true) "Params.type" "remote" }}
-      {{ partial "album-card.html" . }}
-    {{ end }}
-    {{ range where (where .Pages "Params.private" "ne" true) "Params.type" "gallery" }}
+    {{ range where (where .Pages "Params.private" "ne" true) "Params.type" "in" (slice "gallery" "remote") }}
       {{ partial "album-card.html" . }}
     {{ end }}
   </section>

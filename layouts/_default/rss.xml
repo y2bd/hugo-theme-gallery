@@ -47,9 +47,26 @@
           {{- with .Content -}}
           &lt;p&gt;{{ . | html }}&lt;/p&gt;
           {{- end -}}
+          &lt;p&gt;&lt;sub&gt;(psst, I haven't figured out how to embed all the images in the RSS entry yet. follow the link if you want to see them all!)&lt;/sub&gt;&lt;/p&gt;
+        </description>
+      {{- else if eq .Params.type "remote" -}}
+        {{ $gallery := partial "get-remote-gallery.html" . }}
+        <media:content url="{{ $gallery.thumbnail.RelPermalink }}" type="image/jpeg"/>
+        <description>
+          &lt;img src=&quot;{{ $gallery.thumbnail.RelPermalink }}&quot; /&gt;
+          &lt;p&gt;{{ .Params.description | html }}&lt;/p&gt;
+          {{- with .Content -}}
+          &lt;p&gt;{{ . | html }}&lt;/p&gt;
+          {{- end -}}
+          &lt;p&gt;&lt;sub&gt;(psst, I haven't figured out how to embed all the images in the RSS entry yet. follow the link if you want to see them all!)&lt;/sub&gt;&lt;/p&gt;
         </description>
       {{- else -}}
-        <description>{{ .Params.description | html }}</description>
+        <description>
+          &lt;p&gt;{{ .Params.description | html }}&lt;/p&gt;
+          {{- with .Content -}}
+          &lt;p&gt;{{ . | html }}&lt;/p&gt;
+          {{- end -}}
+        </description>
       {{- end -}}
     </item>
     {{- end }}
