@@ -17,9 +17,9 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ if eq  .Title  .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{.}} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <title>{{ if eq  .Title  .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{.}} on {{ end }}{{ .Site.Title }}{{ end }} - All Photos Feed</title>
     <link>{{ .Permalink }}</link>
-    <description>{{ with .Description }}{{.}}{{ end }}</description>
+    <description>{{ with .Description }}{{.}}{{ end }} (this feed includes all photos in every post)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>{{ site.Language.LanguageCode }}</language>{{ with site.Params.author.email }}
     <managingEditor>{{.}}{{ with $authorName }} ({{ . }}){{ end }}</managingEditor>{{ end }}{{ with $authorEmail }}
@@ -39,7 +39,7 @@
       {{- $images := .Resources.ByType "image" -}}
       {{- if gt (len $images) 0 -}}
         {{- $featured := ($images.GetMatch (.Params.featured_image | default "*feature*")) | default (index $images 0) -}}
-        {{- $thumbnail := $featured.Fill "900x900 center" -}}
+        {{- $thumbnail := $featured.Fit "900x900 center" -}}
         <media:content url="{{ $thumbnail.Permalink }}" type="image/jpeg"/>
         <description>
           &lt;img src=&quot;{{ $thumbnail.Permalink }}&quot; /&gt;
@@ -47,7 +47,9 @@
           {{- with .Content -}}
           &lt;p&gt;{{ . | html }}&lt;/p&gt;
           {{- end -}}
-          &lt;p&gt;&lt;sub&gt;(psst, I haven't figured out how to embed all the images in the RSS entry yet. follow the link if you want to see them all!)&lt;/sub&gt;&lt;/p&gt;
+          {{- range $images -}}
+          &lt;img src=&quot;{{ (.Fit "600x600").Permalink }}&quot; /&gt;
+          {{- end -}}
         </description>
       {{- else if eq .Params.type "remote" -}}
         {{ $gallery := partial "get-remote-gallery.html" . }}
@@ -58,7 +60,9 @@
           {{- with .Content -}}
           &lt;p&gt;{{ . | html }}&lt;/p&gt;
           {{- end -}}
-          &lt;p&gt;&lt;sub&gt;(psst, I haven't figured out how to embed all the images in the RSS entry yet. follow the link if you want to see them all!)&lt;/sub&gt;&lt;/p&gt;
+          {{- range $gallery.images -}}
+          &lt;img src=&quot;{{ . }}&quot; /&gt;
+          {{- end -}}
         </description>
       {{- else -}}
         <description>

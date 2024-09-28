@@ -17,6 +17,12 @@
     {{ $thumbnail_url := (replace $url "upload/" "upload/c_limit,w_600,h_600/") }}
     {{ $thumbnail := resources.GetRemote $thumbnail_url }}
     {{ $color := index $thumbnail.Colors 0 | default "transparent" }}
+    {{ $images := slice }}
+    {{ range $data.resources }}
+      {{ $resource_url := .secure_url }}
+      {{ $resource_thumbnail_url := (replace $resource_url "upload/" "upload/c_limit,w_600,h_600/") }}
+      {{ $images = $images | append $resource_thumbnail_url }}
+    {{ end}}
     {{ $gallery = dict
       "page" $page
       "thumbnail" (dict 
@@ -24,6 +30,7 @@
         "Height" $thumbnail.Height
         "RelPermalink" $thumbnail_url
       )
+      "images" $images 
       "color" $color
       "imageCount" (len $data.resources)
     }}
