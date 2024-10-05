@@ -1,6 +1,11 @@
 {{ if .Title }}
   <hgroup>
     <h1>{{ .Title }}</h1>
+    {{ with .Params.date }}
+    <h3 class="date-subheader">
+      <em>Posted <date datetime="{{ . }}">{{ .Format $.Site.Params.dateFormat }}</date></em>
+    </h3>
+    {{ end }}
     {{ with .Params.Description }}
       <p>{{ . | safeHTML }}</p>
     {{ end }}

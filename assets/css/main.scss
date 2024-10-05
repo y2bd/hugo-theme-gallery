@@ -18,3 +18,13 @@
 img.lazyload:not([src]) {
   visibility: hidden;
 }
+
+.date-subheader {
+  align-self: center;
+}
+
+hgroup+article {
+  margin-top: -2rem;
+  padding-top: 2rem;
+  border-top: 1px dotted silver;
+}
